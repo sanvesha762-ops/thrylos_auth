@@ -1,1 +1,3 @@
-# thrylos_auth
+# THRYLOS Auth
+
+Official document verification system.
