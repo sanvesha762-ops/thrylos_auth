@@ -29,24 +29,42 @@
     </nav>
 
     <main class="main-container">
-        <!-- Hero Section -->
         <section class="hero-section">
             <div class="center-logo">
                 <i data-lucide="shield" class="large-logo-icon"></i>
                 <div class="logo-text-small">THRYLOS</div>
             </div>
-            
-            <div class="badge">
-                Secure Document Verification
-            </div>
-
+            <div class="badge">Secure Document Verification</div>
             <h1 class="main-title">
                 Verify Your <span class="gradient-text">Documents</span><br>Instantly
             </h1>
-            
             <p class="subtitle">
                 Scan a QR code, upload an image, or enter a verification ID to instantly<br>verify the authenticity of your documents.
             </p>
+        </section>
+
+        <!-- Interactive Tabs Section -->
+        <section class="verification-card">
+            <div class="tabs">
+                <button class="tab-btn active" data-target="scan-tab">
+                    <i data-lucide="qr-code"></i> Scan
+                </button>
+                <button class="tab-btn" data-target="upload-tab">
+                    <i data-lucide="upload"></i> Upload
+                </button>
+                <button class="tab-btn" data-target="manual-tab">
+                    <i data-lucide="keyboard"></i> Manual
+                </button>
+            </div>
+            <div class="tab-content">
+                <div id="scan-tab" class="tab-pane active">
+                    <div class="scan-area">
+                        <button class="primary-btn scan-btn">
+                            <i data-lucide="camera"></i> Scan QR Code
+                        </button>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
