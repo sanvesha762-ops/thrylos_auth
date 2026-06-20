@@ -63,8 +63,6 @@
                         </button>
                     </div>
                 </div>
-
-                <!-- Upload Tab -->
                 <div id="upload-tab" class="tab-pane">
                     <div class="upload-area" id="drop-zone">
                         <i data-lucide="file-image" class="upload-icon"></i>
@@ -75,7 +73,20 @@
                         Verify Uploaded Document
                     </button>
                 </div>
+                <!-- Manual Tab -->
+                <div id="manual-tab" class="tab-pane">
+                    <div class="manual-input-container">
+                        <div class="input-wrapper">
+                            <i data-lucide="hash" class="input-icon"></i>
+                            <input type="text" id="verification-id" placeholder="Enter Verification ID (e.g., THR-123456)">
+                        </div>
+                    </div>
+                    <button class="primary-btn verify-manual-btn">
+                        <i data-lucide="search"></i> Verify Document
+                    </button>
+                </div>
             </div>
+            <div id="verification-result" class="result-container hidden"></div>
         </section>
     </main>
 
