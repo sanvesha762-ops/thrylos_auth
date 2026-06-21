@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THRYLOS Verify — Official Document Verification</title>
     <meta name="description" content="Verify official THRYLOS documents using QR code scanner or verification ID. Secure, trusted digital verification system.">
+    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -16,6 +18,7 @@
         <span>THRYLOS</span>
     </div>
 
+    <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
@@ -28,21 +31,29 @@
         </div>
     </nav>
 
+    <!-- Main Content -->
     <main class="main-container">
+        <!-- Hero Section -->
         <section class="hero-section">
             <div class="center-logo">
                 <i data-lucide="shield" class="large-logo-icon"></i>
                 <div class="logo-text-small">THRYLOS</div>
             </div>
-            <div class="badge">Secure Document Verification</div>
+            
+            <div class="badge">
+                Secure Document Verification
+            </div>
+
             <h1 class="main-title">
                 Verify Your <span class="gradient-text">Documents</span><br>Instantly
             </h1>
+            
             <p class="subtitle">
                 Scan a QR code, upload an image, or enter a verification ID to instantly<br>verify the authenticity of your documents.
             </p>
         </section>
 
+        <!-- Interactive Tabs Section -->
         <section class="verification-card">
             <div class="tabs">
                 <button class="tab-btn active" data-target="scan-tab">
@@ -55,7 +66,9 @@
                     <i data-lucide="keyboard"></i> Manual
                 </button>
             </div>
+
             <div class="tab-content">
+                <!-- Scan Tab -->
                 <div id="scan-tab" class="tab-pane active">
                     <div class="scan-area">
                         <button class="primary-btn scan-btn">
@@ -63,6 +76,8 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Upload Tab -->
                 <div id="upload-tab" class="tab-pane">
                     <div class="upload-area" id="drop-zone">
                         <i data-lucide="file-image" class="upload-icon"></i>
@@ -73,6 +88,7 @@
                         Verify Uploaded Document
                     </button>
                 </div>
+
                 <!-- Manual Tab -->
                 <div id="manual-tab" class="tab-pane">
                     <div class="manual-input-container">
@@ -88,10 +104,73 @@
             </div>
             <div id="verification-result" class="result-container hidden"></div>
         </section>
+
+        <!-- Trusted Partners Section -->
+        <section class="partners-section">
+            <h2 class="section-title">Our Trusted <span class="blue-text">Partners</span></h2>
+            <p class="section-subtitle">Organizations that trust our verification system</p>
+            <div class="partners-marquee">
+                <div class="marquee-content">
+                    <div class="partner-logo"><i data-lucide="building-2"></i> THRYLOS</div>
+                    <div class="partner-logo"><i data-lucide="building-2"></i> THRYLOS</div>
+                    <div class="partner-logo"><i data-lucide="building-2"></i> THRYLOS</div>
+                    <div class="partner-logo"><i data-lucide="building-2"></i> THRYLOS</div>
+                    <div class="partner-logo"><i data-lucide="building-2"></i> THRYLOS</div>
+                    <div class="partner-logo"><i data-lucide="building-2"></i> THRYLOS</div>
+                    <div class="partner-logo"><i data-lucide="building-2"></i> THRYLOS</div>
+                    <div class="partner-logo"><i data-lucide="building-2"></i> THRYLOS</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2 class="section-title">Enterprise-Grade <span class="blue-text">Features</span></h2>
+            <p class="section-subtitle">Everything you need to issue and verify documents with confidence</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i data-lucide="zap" class="feature-icon text-blue"></i>
+                    <h3>Instant Verification</h3>
+                    <p>Verify documents in milliseconds using our advanced QR code and ID scanning technology.</p>
+                </div>
+                <div class="feature-card">
+                    <i data-lucide="lock" class="feature-icon text-orange"></i>
+                    <h3>Cryptographic Security</h3>
+                    <p>Every document is protected with state-of-the-art cryptographic signatures ensuring integrity.</p>
+                </div>
+                <div class="feature-card">
+                    <i data-lucide="bar-chart-3" class="feature-icon text-purple"></i>
+                    <h3>Detailed Analytics</h3>
+                    <p>Track verification requests, scan locations, and usage statistics in real-time.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <div class="footer-logo">
+                    <i data-lucide="shield-check"></i> THRYLOS <span class="verify-text">VERIFY</span>
+                </div>
+                <p>The global standard for digital document verification.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Support</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 THRYLOS. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Initialize Lucide Icons -->
     <script>
         lucide.createIcons();
     </script>
+    <script src="script.js"></script>
 </body>
 </html>
