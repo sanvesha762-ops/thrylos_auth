@@ -1,0 +1,29 @@
+:root {
+    --bg-color: #05050a;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --card-border: rgba(255, 255, 255, 0.05);
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --primary-blue: #3b82f6;
+    --primary-blue-hover: #2563eb;
+    --accent-orange: #f97316;
+    --accent-purple: #8b5cf6;
+    --gradient-text: linear-gradient(135deg, var(--accent-orange), var(--accent-purple), var(--primary-blue));
+    --navbar-bg: rgba(5, 5, 10, 0.8);
+    --font-family: 'Inter', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+}
