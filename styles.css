@@ -278,3 +278,40 @@ body {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* Scan Area */
+.scan-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed var(--card-border);
+    border-radius: 0.5rem;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.upload-area:hover, .upload-area.dragover {
+    border-color: var(--primary-blue);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.upload-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.upload-area:hover .upload-icon {
+    color: var(--primary-blue);
+}
