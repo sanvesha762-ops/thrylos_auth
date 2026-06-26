@@ -315,3 +315,38 @@ body {
 .upload-area:hover .upload-icon {
     color: var(--primary-blue);
 }
+
+/* Manual Input */
+.manual-input-container {
+    margin-bottom: 1rem;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-secondary);
+    width: 18px;
+    height: 18px;
+}
+
+.input-wrapper input {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    padding: 0.875rem 1rem 0.875rem 2.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.input-wrapper input:focus {
+    border-color: var(--primary-blue);
+}
