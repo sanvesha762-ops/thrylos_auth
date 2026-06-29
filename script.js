@@ -5,11 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultContainer = document.getElementById('verification-result');
 
     function switchTab(targetId) {
-        // Reset result container when switching tabs
         resultContainer.className = 'result-container hidden';
         resultContainer.innerHTML = '';
 
-        // Update Buttons
         tabBtns.forEach(btn => {
             if (btn.dataset.target === targetId) {
                 btn.classList.add('active');
@@ -18,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Update Panes
         tabPanes.forEach(pane => {
             if (pane.id === targetId) {
                 pane.classList.add('active');
@@ -32,5 +29,35 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             switchTab(btn.dataset.target);
         });
+    });
+
+    // --- Mock Verification Functionality ---
+
+    function showVerificationResult(type, success, message) {
+        resultContainer.className = 'result-container';
+        
+        // Show loading first
+        resultContainer.classList.add('loading');
+        resultContainer.innerHTML = `<i data-lucide="loader" class="animate-spin" style="margin-right: 0.5rem; vertical-align: middle;"></i> Verifying ${type}...`;
+        lucide.createIcons();
+
+        // Simulate network request
+        setTimeout(() => {
+            resultContainer.classList.remove('loading');
+            if (success) {
+                resultContainer.classList.add('success');
+                resultContainer.innerHTML = `<i data-lucide="check-circle" style="margin-right: 0.5rem; vertical-align: middle;"></i> <strong>Success:</strong> ${message}`;
+            } else {
+                resultContainer.classList.add('error');
+                resultContainer.innerHTML = `<i data-lucide="x-circle" style="margin-right: 0.5rem; vertical-align: middle;"></i> <strong>Error:</strong> ${message}`;
+            }
+            lucide.createIcons();
+        }, 1500);
+    }
+
+    // 1. Scan QR Code
+    const scanBtn = document.querySelector('.scan-btn');
+    scanBtn.addEventListener('click', () => {
+        showVerificationResult('QR Code', true, 'Document verified successfully. Authentic THRYLOS document.');
     });
 });
