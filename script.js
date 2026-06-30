@@ -5,8 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultContainer = document.getElementById('verification-result');
 
     function switchTab(targetId) {
+        // Reset result container when switching tabs
         resultContainer.className = 'result-container hidden';
         resultContainer.innerHTML = '';
+
+        // Update Buttons
         tabBtns.forEach(btn => {
             if (btn.dataset.target === targetId) {
                 btn.classList.add('active');
@@ -14,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.remove('active');
             }
         });
+
+        // Update Panes
         tabPanes.forEach(pane => {
             if (pane.id === targetId) {
                 pane.classList.add('active');
@@ -32,11 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Mock Verification Functionality ---
 
     function showVerificationResult(type, success, message) {
-        resultContainer.className = 'result-container';
+        resultContainer.className = 'result-container'; // removes hidden and other classes
+        
+        // Show loading first
         resultContainer.classList.add('loading');
         resultContainer.innerHTML = `<i data-lucide="loader" class="animate-spin" style="margin-right: 0.5rem; vertical-align: middle;"></i> Verifying ${type}...`;
         lucide.createIcons();
 
+        // Simulate network request
         setTimeout(() => {
             resultContainer.classList.remove('loading');
             if (success) {
@@ -101,6 +109,25 @@ document.addEventListener('DOMContentLoaded', () => {
     verifyUploadBtn.addEventListener('click', () => {
         if (selectedFile) {
             showVerificationResult('Document', true, 'Document signature matches official records.');
+        }
+    });
+
+    // 3. Manual Verification
+    const manualBtn = document.querySelector('.verify-manual-btn');
+    const verificationInput = document.getElementById('verification-id');
+
+    manualBtn.addEventListener('click', () => {
+        const id = verificationInput.value.trim();
+        if (!id) {
+            alert('Please enter a verification ID');
+            return;
+        }
+
+        // Mock logic: starts with THR- means success
+        if (id.toUpperCase().startsWith('THR-')) {
+            showVerificationResult('ID', true, `Verification ID ${id} is valid and authentic.`);
+        } else {
+            showVerificationResult('ID', false, `Verification ID ${id} not found in our records.`);
         }
     });
 });
