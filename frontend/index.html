@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THRYLOS Verify — Enterprise Document Verification</title>
+    <meta name="description" content="Verify official THRYLOS documents instantly using QR code, file upload, or verification ID. The global standard for digital document verification.">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="THRYLOS Verify — Enterprise Document Verification">
+    <meta property="og:description" content="Instantly verify the authenticity of THRYLOS documents.">
+    <meta property="og:type" content="website">
+
+    <!-- Custom Favicon — No AI or browser defaults -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- ── Animated Background ── -->
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-orbs" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- ── Auth Modal ── -->
+    <div id="auth-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-box">
+            <button class="modal-close" id="close-modal" aria-label="Close modal">
+                <i data-lucide="x"></i>
+            </button>
+
+            <!-- Tabs -->
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-modal-tab="login" id="modal-tab-login">Sign In</button>
+                <button class="modal-tab" data-modal-tab="register" id="modal-tab-register">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="modal-login" class="modal-pane active">
+                <div class="modal-header">
+                    <div class="modal-logo">
+                        <i data-lucide="shield-check"></i>
+                    </div>
+                    <h2 id="modal-title">Welcome back</h2>
+                    <p>Sign in to your THRYLOS account</p>
+                </div>
+                <form id="login-form" novalidate>
+                    <div class="form-group">
+                        <label for="login-email">Email address</label>
+                        <div class="input-wrap">
+                            <i data-lucide="mail" class="field-icon"></i>
+                            <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="input-wrap">
+                            <i data-lucide="lock" class="field-icon"></i>
+                            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+                            <button type="button" class="toggle-pw" aria-label="Toggle password visibility">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="login-error" class="form-error hidden"></div>
+                    <button type="submit" class="btn-primary full-width" id="login-submit">
+                        <span class="btn-text">Sign In</span>
+                        <i data-lucide="loader-2" class="btn-spinner hidden"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div id="modal-register" class="modal-pane">
+                <div class="modal-header">
+                    <div class="modal-logo">
+                        <i data-lucide="user-plus"></i>
+                    </div>
+                    <h2>Create account</h2>
+                    <p>Join the THRYLOS verification platform</p>
+                </div>
+                <form id="register-form" novalidate>
+                    <div class="form-group">
+                        <label for="reg-name">Full name</label>
+                        <div class="input-wrap">
+                            <i data-lucide="user" class="field-icon"></i>
+                            <input type="text" id="reg-name" placeholder="Jane Doe" autocomplete="name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email address</label>
+                        <div class="input-wrap">
+                            <i data-lucide="mail" class="field-icon"></i>
+                            <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-org">Organization <span class="optional">(optional)</span></label>
+                        <div class="input-wrap">
+                            <i data-lucide="building-2" class="field-icon"></i>
+                            <input type="text" id="reg-org" placeholder="ACME Corp" autocomplete="organization">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <div class="input-wrap">
+                            <i data-lucide="lock" class="field-icon"></i>
+                            <input type="password" id="reg-password" placeholder="Min 8 characters" autocomplete="new-password" required>
+                            <button type="button" class="toggle-pw" aria-label="Toggle password visibility">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="register-error" class="form-error hidden"></div>
+                    <button type="submit" class="btn-primary full-width" id="register-submit">
+                        <span class="btn-text">Create Account</span>
+                        <i data-lucide="loader-2" class="btn-spinner hidden"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Toast Container ── -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- ── Navbar ── -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-inner">
+            <a href="/" class="nav-brand" aria-label="THRYLOS Verify home">
+                <i data-lucide="shield-check" class="brand-icon"></i>
+                <span class="brand-name">THRYLOS <span class="brand-accent">VERIFY</span></span>
+            </a>
+
+            <div class="nav-actions">
+                <!-- Logged-out state -->
+                <div id="nav-logged-out" class="nav-auth">
+                    <button class="btn-ghost" id="nav-login-btn" aria-label="Sign in">
+                        <i data-lucide="log-in"></i> Sign In
+                    </button>
+                    <a href="dashboard.html" class="btn-outline" id="nav-dashboard-link" aria-label="Admin Dashboard" style="display:none">
+                        <i data-lucide="layout-dashboard"></i> Dashboard
+                    </a>
+                </div>
+                <!-- Logged-in state -->
+                <div id="nav-logged-in" class="nav-user hidden">
+                    <div class="user-avatar" aria-label="User menu">
+                        <span id="user-initial">A</span>
+                    </div>
+                    <span id="user-name-nav" class="user-name-nav"></span>
+                    <button class="btn-ghost small" id="nav-logout-btn">
+                        <i data-lucide="log-out"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── Main Content ── -->
+    <main>
+        <!-- Hero -->
+        <section class="hero" aria-label="Document verification hero">
+            <div class="hero-badge">
+                <i data-lucide="shield" style="width:14px;height:14px"></i>
+                Enterprise-Grade Verification
+            </div>
+            <h1 class="hero-title">
+                Verify Documents<br>
+                <span class="gradient-text">With Confidence</span>
+            </h1>
+            <p class="hero-subtitle">
+                Scan a QR code, upload a document, or enter a verification ID to instantly
+                confirm authenticity — powered by cryptographic verification and a real-time database.
+            </p>
+
+            <!-- Stat Pills -->
+            <div class="stat-pills">
+                <div class="stat-pill">
+                    <i data-lucide="zap"></i>
+                    <span>&lt;100ms Response</span>
+                </div>
+                <div class="stat-pill">
+                    <i data-lucide="database"></i>
+                    <span>Live Database</span>
+                </div>
+                <div class="stat-pill">
+                    <i data-lucide="lock"></i>
+                    <span>SHA-256 Secured</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Verification Card -->
+        <section class="verify-section" aria-label="Document verification tool">
+            <div class="verify-card">
+                <!-- Tab Bar -->
+                <div class="vtabs" role="tablist" aria-label="Verification method">
+                    <button class="vtab active" data-target="tab-manual" role="tab" aria-selected="true" aria-controls="tab-manual" id="vtab-manual">
+                        <i data-lucide="hash"></i> Verify ID
+                    </button>
+                    <button class="vtab" data-target="tab-upload" role="tab" aria-selected="false" aria-controls="tab-upload" id="vtab-upload">
+                        <i data-lucide="upload"></i> Upload
+                    </button>
+                    <button class="vtab" data-target="tab-scan" role="tab" aria-selected="false" aria-controls="tab-scan" id="vtab-scan">
+                        <i data-lucide="qr-code"></i> QR Scan
+                    </button>
+                </div>
+
+                <!-- Manual Tab -->
+                <div id="tab-manual" class="vtab-pane active" role="tabpanel" aria-labelledby="vtab-manual">
+                    <p class="tab-hint">Enter the Verification ID printed on your document (format: THR-XXXXXX)</p>
+                    <div class="id-input-wrap">
+                        <i data-lucide="hash" class="id-input-icon"></i>
+                        <input
+                            type="text"
+                            id="verification-id"
+                            class="id-input"
+                            placeholder="THR-000001"
+                            maxlength="10"
+                            autocomplete="off"
+                            aria-label="Verification ID"
+                            spellcheck="false"
+                        >
+                        <button class="btn-verify" id="verify-manual-btn" aria-label="Verify document">
+                            <span>Verify</span>
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+                    </div>
+                    <p class="quick-hint">Try: <button class="demo-link" data-id="THR-000001">THR-000001</button> · <button class="demo-link" data-id="THR-000006">THR-000006</button> (revoked) · <button class="demo-link" data-id="THR-000007">THR-000007</button> (expired)</p>
+                </div>
+
+                <!-- Upload Tab -->
+                <div id="tab-upload" class="vTab-pane" role="tabpanel" aria-labelledby="vtab-upload" style="display:none">
+                    <p class="tab-hint">Upload the original document image or PDF — we'll verify its SHA-256 hash.</p>
+                    <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="Upload document">
+                        <div class="drop-zone-inner">
+                            <div class="drop-icon-wrap">
+                                <i data-lucide="file-up" class="drop-icon"></i>
+                            </div>
+                            <p class="drop-title">Drop file here or <span class="drop-link">browse</span></p>
+                            <p class="drop-meta">Supports: JPG, PNG, PDF · Max 10MB</p>
+                        </div>
+                        <input type="file" id="file-input" hidden accept="image/*,.pdf" aria-label="Document upload input">
+                    </div>
+                    <button class="btn-primary full-width" id="verify-upload-btn" disabled>
+                        <i data-lucide="shield-check"></i>
+                        <span>Verify Document</span>
+                    </button>
+                </div>
+
+                <!-- QR Scan Tab -->
+                <div id="tab-scan" class="vTab-pane" role="tabpanel" aria-labelledby="vtab-scan" style="display:none">
+                    <p class="tab-hint">Point your camera at the QR code on the document. Camera access is required.</p>
+                    <div class="scan-area">
+                        <div class="scan-frame" aria-hidden="true">
+                            <div class="scan-corner tl"></div>
+                            <div class="scan-corner tr"></div>
+                            <div class="scan-corner bl"></div>
+                            <div class="scan-corner br"></div>
+                            <div class="scan-line"></div>
+                        </div>
+                        <video id="qr-video" autoplay playsinline muted style="display:none"></video>
+                    </div>
+                    <button class="btn-primary full-width" id="scan-start-btn">
+                        <i data-lucide="camera"></i>
+                        <span>Start Camera Scan</span>
+                    </button>
+                </div>
+
+                <!-- Verification Result -->
+                <div id="verify-result" class="verify-result hidden" aria-live="polite" role="status"></div>
+            </div>
+        </section>
+
+        <!-- Stats Bar -->
+        <section class="stats-section" aria-label="Platform statistics">
+            <div class="stats-inner">
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-docs">10+</span>
+                    <span class="stat-label">Documents Issued</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">99.9%</span>
+                    <span class="stat-label">Uptime SLA</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">&lt;100ms</span>
+                    <span class="stat-label">Avg. Verify Time</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">SHA-256</span>
+                    <span class="stat-label">Hash Algorithm</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partners -->
+        <section class="partners-section" aria-label="Trusted partners">
+            <h2 class="section-title">Trusted by Leading <span class="gradient-text">Organizations</span></h2>
+            <p class="section-sub">Institutions that rely on THRYLOS for mission-critical document integrity</p>
+            <div class="marquee-wrap">
+                <div class="marquee" aria-hidden="true">
+                    <div class="marquee-track">
+                        <div class="partner-chip"><i data-lucide="landmark"></i> IIT Mumbai</div>
+                        <div class="partner-chip"><i data-lucide="building-2"></i> Global Fintech Ltd</div>
+                        <div class="partner-chip"><i data-lucide="briefcase"></i> Bureau Veritas</div>
+                        <div class="partner-chip"><i data-lucide="globe-2"></i> EuroTech GmbH</div>
+                        <div class="partner-chip"><i data-lucide="shield"></i> AcmeSoft Tech</div>
+                        <div class="partner-chip"><i data-lucide="cpu"></i> StartupXYZ India</div>
+                        <div class="partner-chip"><i data-lucide="landmark"></i> IIT Mumbai</div>
+                        <div class="partner-chip"><i data-lucide="building-2"></i> Global Fintech Ltd</div>
+                        <div class="partner-chip"><i data-lucide="briefcase"></i> Bureau Veritas</div>
+                        <div class="partner-chip"><i data-lucide="globe-2"></i> EuroTech GmbH</div>
+                        <div class="partner-chip"><i data-lucide="shield"></i> AcmeSoft Tech</div>
+                        <div class="partner-chip"><i data-lucide="cpu"></i> StartupXYZ India</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features-section" aria-label="Platform features">
+            <h2 class="section-title">Enterprise-Grade <span class="gradient-text">Security</span></h2>
+            <p class="section-sub">Built for multinational scale from day one</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon-wrap blue">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <h3>Real-Time Verification</h3>
+                    <p>Sub-100ms verification against a live PostgreSQL database with connection pooling for thousands of concurrent users.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap purple">
+                        <i data-lucide="fingerprint"></i>
+                    </div>
+                    <h3>Cryptographic Integrity</h3>
+                    <p>SHA-256 document hashing with tamper detection. Every verification attempt is logged with IP, method, and timestamp.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap orange">
+                        <i data-lucide="shield-check"></i>
+                    </div>
+                    <h3>JWT Authentication</h3>
+                    <p>Stateless RS256 JWT tokens with role-based access control — public, verifier, admin, and superadmin tiers.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap green">
+                        <i data-lucide="bar-chart-3"></i>
+                    </div>
+                    <h3>Audit Trail</h3>
+                    <p>Every verification request is logged — who verified, when, from where, and what the result was. Full forensic traceability.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap teal">
+                        <i data-lucide="gauge"></i>
+                    </div>
+                    <h3>Rate Protection</h3>
+                    <p>Three-tier rate limiting (global, verify, auth) using express-rate-limit. DDoS and brute-force resistant by design.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap red">
+                        <i data-lucide="globe-2"></i>
+                    </div>
+                    <h3>Scalable Architecture</h3>
+                    <p>Stateless backend designed to scale horizontally. PostgreSQL with pg-pool handles thousands of simultaneous connections.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Preview -->
+        <section class="api-section" aria-label="API documentation preview">
+            <div class="api-card">
+                <div class="api-left">
+                    <div class="api-badge">REST API</div>
+                    <h2>Integrate Verification Into Your Workflow</h2>
+                    <p>Use our REST API to verify documents programmatically in your own applications, workflows, and pipelines.</p>
+                    <a href="dashboard.html" class="btn-primary" style="display:inline-flex;width:auto">
+                        <i data-lucide="layout-dashboard"></i> Open Dashboard
+                    </a>
+                </div>
+                <div class="api-right">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                            <span class="code-lang">bash</span>
+                        </div>
+                        <pre><code><span class="token-comment"># Verify a document by ID</span>
+<span class="token-keyword">curl</span> -X GET \
+  http://localhost:3001/api/verify/THR-000001
+
+<span class="token-comment"># Response</span>
+{
+  <span class="token-string">"success"</span>: true,
+  <span class="token-string">"result"</span>: <span class="token-string">"verified"</span>,
+  <span class="token-string">"document"</span>: {
+    <span class="token-string">"verificationId"</span>: <span class="token-string">"THR-000001"</span>,
+    <span class="token-string">"title"</span>: <span class="token-string">"Certificate of Excellence"</span>,
+    <span class="token-string">"status"</span>: <span class="token-string">"valid"</span>
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <i data-lucide="shield-check"></i>
+                THRYLOS <span class="brand-accent">VERIFY</span>
+            </div>
+            <p class="footer-desc">The global standard for digital document verification.</p>
+            <nav class="footer-links" aria-label="Footer navigation">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Support</a>
+                <a href="dashboard.html">Admin Portal</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 THRYLOS Corp. All rights reserved.</span>
+            <span class="footer-status">
+                <span class="status-dot"></span> All systems operational
+            </span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>lucide.createIcons();</script>
+    <script src="app.js"></script>
+</body>
+</html>
