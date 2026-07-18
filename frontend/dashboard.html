@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THRYLOS Admin — Document Management Dashboard</title>
+    <meta name="description" content="Admin portal for issuing, managing, and revoking THRYLOS verification documents.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Custom Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="dashboard-body">
+    <!-- ── Toast Container ── -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- ── Auth Gate ── -->
+    <div id="auth-gate" class="auth-gate hidden">
+        <div class="gate-card">
+            <div class="gate-logo">
+                <i data-lucide="shield-alert"></i>
+            </div>
+            <h1>Admin Access Required</h1>
+            <p>You must be logged in with an admin account to access the dashboard.</p>
+            <a href="index.html" class="btn-primary" style="display:inline-flex;width:auto">
+                <i data-lucide="arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+    <!-- ── Issue Document Modal ── -->
+    <div id="issue-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Issue new document">
+        <div class="modal-box" style="max-width:520px">
+            <button class="modal-close" id="close-issue-modal"><i data-lucide="x"></i></button>
+            <div class="modal-header">
+                <div class="modal-logo"><i data-lucide="file-plus-2"></i></div>
+                <h2>Issue New Document</h2>
+                <p>A unique Verification ID (THR-XXXXXX) will be generated automatically.</p>
+            </div>
+            <form id="issue-form" novalidate>
+                <div class="form-grid">
+                    <div class="form-group full-col">
+                        <label for="f-title">Document Title *</label>
+                        <div class="input-wrap">
+                            <i data-lucide="file-text" class="field-icon"></i>
+                            <input type="text" id="f-title" placeholder="Certificate of Excellence — Software Engineering" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="f-type">Document Type *</label>
+                        <div class="select-wrap">
+                            <select id="f-type" required>
+                                <option value="">Select type...</option>
+                                <option value="certificate">Certificate</option>
+                                <option value="id_card">ID Card</option>
+                                <option value="contract">Contract</option>
+                                <option value="transcript">Transcript</option>
+                                <option value="certification">Certification</option>
+                                <option value="agreement">Agreement</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="select-icon"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="f-org">Organization</label>
+                        <div class="input-wrap">
+                            <i data-lucide="building-2" class="field-icon"></i>
+                            <input type="text" id="f-org" placeholder="THRYLOS Corp">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="f-name">Issued To (Name) *</label>
+                        <div class="input-wrap">
+                            <i data-lucide="user" class="field-icon"></i>
+                            <input type="text" id="f-name" placeholder="Jane Doe" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="f-email">Issued To (Email)</label>
+                        <div class="input-wrap">
+                            <i data-lucide="mail" class="field-icon"></i>
+                            <input type="email" id="f-email" placeholder="jane@example.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="f-issue-date">Issue Date *</label>
+                        <div class="input-wrap">
+                            <i data-lucide="calendar" class="field-icon"></i>
+                            <input type="date" id="f-issue-date" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="f-expiry">Expiry Date <span class="optional">(optional)</span></label>
+                        <div class="input-wrap">
+                            <i data-lucide="calendar-off" class="field-icon"></i>
+                            <input type="date" id="f-expiry">
+                        </div>
+                    </div>
+                </div>
+                <div id="issue-error" class="form-error hidden"></div>
+                <div style="display:flex;gap:0.75rem;margin-top:1rem">
+                    <button type="button" class="btn-ghost full-width" id="cancel-issue">Cancel</button>
+                    <button type="submit" class="btn-primary full-width" id="issue-submit">
+                        <span class="btn-text"><i data-lucide="plus" style="width:16px;height:16px"></i> Issue Document</span>
+                        <i data-lucide="loader-2" class="btn-spinner hidden"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar" role="complementary" aria-label="Admin navigation">
+        <div class="sidebar-brand">
+            <i data-lucide="shield-check" class="brand-icon"></i>
+            <span>THRYLOS <span class="brand-accent">ADMIN</span></span>
+        </div>
+        <nav class="sidebar-nav" aria-label="Dashboard sections">
+            <a href="#" class="nav-item active" data-section="overview">
+                <i data-lucide="layout-dashboard"></i> Overview
+            </a>
+            <a href="#" class="nav-item" data-section="documents">
+                <i data-lucide="files"></i> Documents
+            </a>
+            <a href="#" class="nav-item" data-section="logs">
+                <i data-lucide="activity"></i> Audit Logs
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="user-avatar" id="dash-avatar">A</div>
+                <div class="sidebar-user-info">
+                    <span id="dash-user-name" class="dash-name">Admin</span>
+                    <span id="dash-user-role" class="dash-role">admin</span>
+                </div>
+            </div>
+            <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
+                <a href="index.html" class="btn-ghost small" style="flex:1;justify-content:center">
+                    <i data-lucide="home"></i> Home
+                </a>
+                <button class="btn-ghost small" id="dash-logout" style="flex:1;justify-content:center">
+                    <i data-lucide="log-out"></i> Sign out
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── Main Dashboard ── -->
+    <main class="dash-main" id="dash-content">
+        <!-- ── Overview Section ── -->
+        <section class="dash-section active" id="section-overview">
+            <div class="dash-header">
+                <div>
+                    <h1 class="dash-title">Dashboard Overview</h1>
+                    <p class="dash-subtitle">Real-time statistics from the live database</p>
+                </div>
+                <button class="btn-primary" id="open-issue-btn">
+                    <i data-lucide="plus"></i> Issue Document
+                </button>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="stat-cards">
+                <div class="stat-card">
+                    <div class="stat-card-icon blue"><i data-lucide="files"></i></div>
+                    <div class="stat-card-info">
+                        <span class="stat-card-num" id="stat-total">—</span>
+                        <span class="stat-card-label">Total Documents</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon green"><i data-lucide="check-circle-2"></i></div>
+                    <div class="stat-card-info">
+                        <span class="stat-card-num" id="stat-valid">—</span>
+                        <span class="stat-card-label">Valid</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon red"><i data-lucide="shield-off"></i></div>
+                    <div class="stat-card-info">
+                        <span class="stat-card-num" id="stat-revoked">—</span>
+                        <span class="stat-card-label">Revoked</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon orange"><i data-lucide="activity"></i></div>
+                    <div class="stat-card-info">
+                        <span class="stat-card-num" id="stat-verifications">—</span>
+                        <span class="stat-card-label">Total Verifications</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Documents Preview -->
+            <div class="dash-card">
+                <div class="card-header">
+                    <h2>Recent Documents</h2>
+                    <button class="btn-ghost small" data-section="documents" onclick="switchSection('documents')">View all</button>
+                </div>
+                <div id="overview-docs-list" class="docs-table-wrap">
+                    <div class="loading-row"><div class="pulse-ring"></div> Loading...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Documents Section ── -->
+        <section class="dash-section" id="section-documents" style="display:none">
+            <div class="dash-header">
+                <div>
+                    <h1 class="dash-title">Document Management</h1>
+                    <p class="dash-subtitle">Issue, search, and revoke verification documents</p>
+                </div>
+                <button class="btn-primary" id="open-issue-btn-2">
+                    <i data-lucide="plus"></i> Issue Document
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-bar">
+                <div class="input-wrap" style="flex:1;max-width:360px">
+                    <i data-lucide="search" class="field-icon"></i>
+                    <input type="text" id="doc-search" placeholder="Search by ID, title, or name..." style="padding-left:2.5rem">
+                </div>
+                <div class="select-wrap" style="width:160px">
+                    <select id="doc-status-filter">
+                        <option value="">All Statuses</option>
+                        <option value="valid">Valid</option>
+                        <option value="revoked">Revoked</option>
+                        <option value="expired">Expired</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="select-icon"></i>
+                </div>
+                <button class="btn-ghost" id="doc-search-btn">
+                    <i data-lucide="filter"></i> Apply
+                </button>
+            </div>
+
+            <div class="dash-card" style="padding:0">
+                <div id="docs-table-container" class="docs-table-wrap">
+                    <div class="loading-row"><div class="pulse-ring"></div> Loading documents...</div>
+                </div>
+                <div id="docs-pagination" class="pagination hidden"></div>
+            </div>
+        </section>
+
+        <!-- ── Logs Section ── -->
+        <section class="dash-section" id="section-logs" style="display:none">
+            <div class="dash-header">
+                <div>
+                    <h1 class="dash-title">Audit Logs</h1>
+                    <p class="dash-subtitle">Every verification attempt — who, when, and the result</p>
+                </div>
+            </div>
+            <div class="dash-card">
+                <p class="empty-state" style="padding:3rem;text-align:center;color:var(--text-3)">
+                    <i data-lucide="activity" style="width:32px;height:32px;margin:0 auto 1rem;display:block;opacity:0.4"></i>
+                    Audit log viewer requires backend connection.<br>Logs are stored in the <code>verification_logs</code> PostgreSQL table.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script>lucide.createIcons();</script>
+    <script src="app.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
